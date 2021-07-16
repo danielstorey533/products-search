@@ -1,24 +1,34 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import * as d3 from 'd3';
 import './App.css';
 
-function App() {
+import ProductsTable from './ProductsTable.jsx';
+
+const App = () => {
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const parse = d => {
+    d.additional_image_link = d.additional_image_link.split(',');
+    return d;
+  };
+
+  useEffect(async () => {
+    await loadProducts();
+  }, []);
+
+
+  const loadProducts = () => {
+    d3.csv('./data/products.csv', parse).then((data) => {
+      setProducts(data); 
+      setFilteredProducts(data)})
+  }
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div id="container">
+        <ProductsTable products={filteredProducts.splice(0, 100)}/>
+      </div>
   );
 }
 
